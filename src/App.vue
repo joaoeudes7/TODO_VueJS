@@ -1,0 +1,79 @@
+<template>
+  <div id="app">
+    <h1>Tarefas</h1>
+    <new-task @taskAdded="addTask($event)" />
+    <task-grid :tasks="tasks"></task-grid>
+  </div>
+</template>
+
+<script>
+import TaskGrid from "./components/TaskGrid";
+import NewTask from "./components/NewTask.vue";
+import bus from "../src/bus";
+export default {
+  components: {
+    TaskGrid,
+    NewTask
+  },
+  data() {
+    return {
+      tasks: [
+        { name: "Estudar Vue", pedding: true },
+        { name: "Ir para academia", pedding: false }
+      ]
+    };
+  },
+  methods: {
+    addTask(task) {
+      const reallyNew = this.tasks.filter(el => {
+        return el.name === task.name;
+      });
+      if (reallyNew.length === 0) {
+        this.tasks.push({
+          name: task.name,
+          pedding: true
+        });
+      } else {
+        alert("Já existe uma tarefa com este nome!");
+      }
+    }
+  },
+  created() {
+    bus.onAlterTask(name => {
+      const tasks = this.tasks.map(e => {
+        if (e.name === name) e.pedding = !e.pedding;
+        return e;
+      });
+      this.tasks = tasks;
+    });
+    bus.onDeletedTask(name => {
+      const i = this.tasks.indexOf(name);
+      
+      this.tasks.splice(i, 1);
+    });
+  }
+};
+</script>
+
+<style>
+body {
+  font-family: "Lato", sans-serif;
+  background: linear-gradient(to right, rgb(22, 34, 42), rgb(58, 96, 115));
+  color: #fff;
+}
+
+#app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#app h1 {
+  margin-bottom: 5px;
+  font-weight: 300;
+  font-size: 3rem;
+}
+</style>
