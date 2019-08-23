@@ -19,6 +19,8 @@ export default {
   },
   methods: {
     add() {
+      if (!this.name)
+        return
       this.$emit("taskAdded", {
         name: this.name
       });

@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <h1>Tarefas</h1>
+    <progress-bar :progress="finishTasks" />
     <new-task @taskAdded="addTask($event)" />
     <task-grid :tasks="tasks"></task-grid>
   </div>
@@ -10,20 +11,39 @@
 import TaskGrid from "./components/TaskGrid";
 import NewTask from "./components/NewTask.vue";
 import bus from "../src/bus";
+import ProgressBar from "../src/components/ProgressBar";
 export default {
   components: {
     TaskGrid,
-    NewTask
+    NewTask,
+    ProgressBar
   },
   data() {
     return {
-      tasks: [
-        { name: "Estudar Vue", pedding: true },
-        { name: "Ir para academia", pedding: false }
-      ]
+      tasks: []
     };
   },
+  computed: {
+    finishTasks() {
+      const tasks = this.tasks.filter(e => !e.pedding);
+      const percent = (tasks.length * 100) / this.tasks.length;
+      return Math.round(percent) || 0;
+    }
+  },
+  watch: {
+    tasks: {
+      deep: true,
+      handler() {
+        localStorage.setItem("tasks", JSON.stringify(this.tasks));
+      }
+    }
+  },
   methods: {
+    recoveryTasks() {
+      const data = localStorage.getItem("tasks");
+      const tasks = JSON.parse(data) || [];
+      this.tasks = tasks;
+    },
     addTask(task) {
       const reallyNew = this.tasks.filter(el => {
         return el.name === task.name;
@@ -48,9 +68,10 @@ export default {
     });
     bus.onDeletedTask(name => {
       const i = this.tasks.indexOf(name);
-      
+
       this.tasks.splice(i, 1);
     });
+    this.recoveryTasks();
   }
 };
 </script>
