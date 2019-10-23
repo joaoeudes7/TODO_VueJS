@@ -1,7 +1,13 @@
 <template>
   <div class="task-grid">
     <template v-if="tasks.length > 0">
-      <Task :task="task" v-for="task in tasks" :key="task.name" @done="handleCompleted" @delete="handleDelete" />
+      <Task
+        v-for="(task, i) in tasks"
+        :task="task"
+        :key="i"
+        @done="handleCompleted"
+        @delete="handleDelete"
+      />
     </template>
     <template v-else>
       <p class="no-task">Sua vida está em dia :)</p>
@@ -24,10 +30,10 @@ export default {
   },
   methods: {
     handleCompleted(task) {
-      this.$emit('completed', task)
+      this.$emit("completed", task);
     },
     handleDelete(task) {
-      this.$emit('deleted', task)
+      this.$emit("deleted", task);
     }
   }
 };
