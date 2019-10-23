@@ -1,12 +1,11 @@
 <template>
-  <div @click="alterStatus()" class="task" :class="stateClass">
+  <div @click="doneTask()" class="task" :class="stateClass">
     <span @click.stop="delTask()" class="close">x</span>
     <p>{{task.name}}</p>
   </div>
 </template>
 
 <script>
-import bus from "../bus";
 export default {
   props: {
     task: {
@@ -17,22 +16,23 @@ export default {
   computed: {
     stateClass() {
       return {
-        pedding: this.task.pedding,
-        done: !this.task.pedding
+        pedding: !this.task.done,
+        done: this.task.done
       };
     }
   },
   methods: {
-    alterStatus() {
-      bus.alterTask(this.task.name);
+    doneTask() {
+      this.$emit("done", this.task);
     },
-    delTask(){
-      bus.delTask(this.task.name)
+    delTask() {
+      this.$emit("delete", this.task);
     }
   }
 };
 </script>
-<style >
+
+<style>
 .task {
   position: relative;
   box-sizing: border-box;
@@ -79,7 +79,7 @@ export default {
   font-weight: 600;
   height: 20px;
   width: 20px;
-  border-radius : 10px;
+  border-radius: 10px;
   text-align: center;
 }
 </style>

@@ -1,8 +1,7 @@
 <template>
   <div class="task-grid">
-    <template v-if='tasks.length > 0'>
-      <Task :task='task' v-for="task in tasks" :key="task.name">
-      </Task>
+    <template v-if="tasks.length > 0">
+      <Task :task="task" v-for="task in tasks" :key="task.name" @done="handleCompleted" @delete="handleDelete" />
     </template>
     <template v-else>
       <p class="no-task">Sua vida está em dia :)</p>
@@ -11,7 +10,8 @@
 </template>
 
 <script>
-import Task from './Task.vue'
+import Task from "./Task.vue";
+
 export default {
   props: {
     tasks: {
@@ -19,20 +19,28 @@ export default {
       required: true
     }
   },
-  components:{
+  components: {
     Task
+  },
+  methods: {
+    handleCompleted(task) {
+      this.$emit('completed', task)
+    },
+    handleDelete(task) {
+      this.$emit('deleted', task)
+    }
   }
 };
 </script>
 
 <style >
-  .task-grid{
-    display:  flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .no-task{
-    color: #AAA;
-    font-size: 1.7rem;
-  }
+.task-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.no-task {
+  color: #aaa;
+  font-size: 1.7rem;
+}
 </style>
